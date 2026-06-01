@@ -1,7 +1,16 @@
 package-as: autocc
 
+# curse-id: fill this in once the CurseForge project is approved.
+# Find it on your project page URL or the project's "Information" page.
+# Without this line the packager skips CurseForge upload silently.
+# curse-id: 0000000
+
 ignore:
     - .github
     - .gitignore
     - .pkgmeta
     - .release
+    - .claude
+    - CLAUDE.md
+    - release-please-config.json
+    - .release-please-manifest.json
