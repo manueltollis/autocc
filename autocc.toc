@@ -1,0 +1,15 @@
+## Interface: 120005
+## Title: autocc
+## Notes: Mythic+ AoE CC rotation helper. Suggests the next CC abilities to use across your party to maximize chained lockdown duration.
+## Author: manuel@rapidata.ai
+## Version: 0.1.0
+## SavedVariables: AutoCCDB
+## IconTexture: Interface\Icons\spell_frost_chainsofice
+
+Core.lua
+Database.lua
+DRTracker.lua
+PartyTracker.lua
+Rotation.lua
+UI.lua
+Config.lua
