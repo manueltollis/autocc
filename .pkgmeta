@@ -3,7 +3,7 @@ package-as: autocc
 # curse-id: fill this in once the CurseForge project is approved.
 # Find it on your project page URL or the project's "Information" page.
 # Without this line the packager skips CurseForge upload silently.
-# curse-id: 0000000
+# curse-id: 1561096
 
 ignore:
     - .github
