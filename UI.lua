@@ -174,8 +174,10 @@ function UI:LayoutIcons(count)
 end
 
 local function paintIcon(icon, suggestion)
+    if not icon or not suggestion then return end
     local entry  = suggestion.entry
     local member = suggestion.member
+    if not entry or not member then return end
 
     icon.icon:SetTexture(GetSpellIconPath(entry.id) or entry.icon or 134400)
 
