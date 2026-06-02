@@ -76,8 +76,42 @@ ns.Database = {
     drWindow      = 18.0,
 }
 
-function ns.Database:GetByCastID(id)     return self.byID[id]     end
-function ns.Database:GetByAuraID(id)     return self.byAuraID[id] end
+local function isSecret(v)
+    return v ~= nil and _G.issecretvalue and _G.issecretvalue(v)
+end
+
+function ns.Database:GetByCastID(id)
+    if id == nil or isSecret(id) then return nil end
+    return self.byID[id]
+end
+
+function ns.Database:GetByAuraID(id)
+    -- Midnight obfuscates aura spellIDs on hostile units into "secret values"
+    -- that crash table indexing. Guard against that here.
+    if id == nil or isSecret(id) then return nil end
+    return self.byAuraID[id]
+end
+
+-- Localized-name fallback. Built lazily because C_Spell.GetSpellInfo isn't
+-- guaranteed to be ready at addon load. Names from the client locale match
+-- both sides (our DB lookup and the aura `name` field), so this works in any
+-- language without us hardcoding translations.
+local nameLookup
+function ns.Database:GetByAuraName(name)
+    if not name or name == "" then return nil end
+    if not nameLookup then
+        nameLookup = {}
+        if C_Spell and C_Spell.GetSpellInfo then
+            for id, entry in pairs(self.byAuraID) do
+                local info = C_Spell.GetSpellInfo(id)
+                local resolvedName = info and info.name
+                if resolvedName then nameLookup[resolvedName] = entry end
+            end
+        end
+    end
+    return nameLookup[name]
+end
+
 function ns.Database:GetForClass(class)  return self.byClass[class] or {} end
 function ns.Database:DRMultiplier(applicationCount)
     return self.drMultipliers[applicationCount] or 0.0

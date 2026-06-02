@@ -64,6 +64,8 @@ function DR:Forget(unitToken)
 end
 
 local function snapshotAuras(unit)
+    -- Result is keyed by entry.id (our own static spellID, always a plain
+    -- number) so we never put a Midnight secret value into a table key.
     local out = {}
     if not UnitExists(unit) then return out end
     if not C_UnitAuras or not C_UnitAuras.GetAuraDataByIndex then return out end
@@ -71,9 +73,12 @@ local function snapshotAuras(unit)
     for i = 1, 40 do
         local data = C_UnitAuras.GetAuraDataByIndex(unit, i, "HARMFUL")
         if not data then break end
+        -- spellId is a secret value for hostile auras in Midnight; lookup by
+        -- name is the reliable path. Try spellId first for cheaper hits.
         local entry = Database:GetByAuraID(data.spellId)
+                  or Database:GetByAuraName(data.name)
         if entry and (entry.duration or 0) > 0 and entry.cat ~= CAT.KNOCKBACK then
-            out[data.spellId] = entry
+            out[entry.id] = entry
         end
     end
     return out
@@ -87,8 +92,8 @@ local function processUnit(unit)
     local current = snapshotAuras(unit)
     local prev = DR.seenAuras[unit] or {}
 
-    for spellID, entry in pairs(current) do
-        if not prev[spellID] then
+    for entryID, entry in pairs(current) do
+        if not prev[entryID] then
             local count = DR:Get(unit, entry.cat)
             local mult  = Database:DRMultiplier(count)
             local effective = (entry.duration or 0) * mult
